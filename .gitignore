@@ -1,0 +1,36 @@
+# Arduino IDE build cache
+build/
+*.bin
+*.elf
+*.hex
+*.map
+
+# Arduino IDE preferences
+*.pref
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# VS Code
+.vscode/
+
+# CLion / JetBrains
+.idea/
+cmake-build-*/
+
+# Arduino CLI build output
+/build/
+
+# Backup files
+*.bak
+*.orig
