@@ -21,8 +21,8 @@
  * L298N screw terminals (OUT1/OUT2 or OUT3/OUT4).
  */
 
-#include "../robot_car/config.h"
-#include "../robot_car/motors.h"
+#include "config.h"
+#include "motors.h"
 
 #define TEST_SPEED   160
 #define STEP_MS      1000   // Duration of each test step

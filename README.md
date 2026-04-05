@@ -93,15 +93,26 @@ L298N 5V output ──── Arduino 5V pin (when VS ≤ 12V, jumper present)
 ```
 arduino-robot-car/
 ├── src/
-│   ├── robot_car/              # Main sketch (upload this)
+│   ├── robot_car/              # v1 — Obstacle avoidance (open-loop)
 │   │   ├── robot_car.ino       # Main state-machine loop
 │   │   ├── config.h            # All tunable constants in one place
 │   │   ├── motors.h/.cpp       # L298N motor driver API
 │   │   └── ultrasonic.h/.cpp   # HC-SR04 sensor API
+│   │
+│   ├── robot_car_pid/          # v2 — PID closed-loop speed control
+│   │   ├── robot_car_pid.ino   # Main sketch with PID state machine
+│   │   ├── config.h            # Extended config with PID gains
+│   │   ├── motors.h/.cpp       # L298N motor driver API (shared)
+│   │   ├── ultrasonic.h/.cpp   # HC-SR04 sensor API (shared)
+│   │   ├── encoder.h/.cpp      # Wheel encoder ISR + speed measurement
+│   │   └── pid.h/.cpp          # Generic discrete PID controller
+│   │
 │   ├── test_motors/            # Motor wiring verification sketch
 │   │   └── test_motors.ino
-│   └── test_ultrasonic/        # Sensor wiring verification sketch
-│       └── test_ultrasonic.ino
+│   ├── test_ultrasonic/        # Sensor wiring verification sketch
+│   │   └── test_ultrasonic.ino
+│   └── test_pid/               # PID tuning and encoder verification
+│       └── test_pid.ino
 ├── docs/
 │   ├── wiring_diagram.md       # Detailed wiring notes
 │   └── images/                 # Build photos
@@ -227,13 +238,66 @@ Prints live distance readings every 100 ms. Wave your hand in front of the senso
 
 ---
 
+---
+
+## v2 — PID Closed-Loop Speed Control
+
+The `src/robot_car_pid/` sketch extends v1 with **closed-loop PID motor speed control** using wheel encoders. Both motors are independently regulated to maintain equal, consistent speed regardless of manufacturing variation, battery voltage sag, or surface grip differences.
+
+### Additional Hardware Required
+
+| Component | Qty | Notes |
+|---|---|---|
+| Optical wheel encoder module | 2 | 20-slot disc; 3-pin: VCC, GND, OUT |
+
+### Additional Wiring
+
+| Arduino Pin | Connected To |
+|---|---|
+| **2** (INT0) | Left encoder signal output |
+| **3** (INT1) | Right encoder signal output |
+| **5V** | Both encoder VCC pins |
+| **GND** | Both encoder GND pins |
+
+### How the PID Works
+
+Each motor has its own independent `PIDController` instance. On every 100 ms tick:
+
+1. The encoder pulse count for each wheel is read and reset.
+2. The PID computes a corrected PWM value: `output = Kp×error + Ki×integral + Kd×derivative`
+3. The corrected PWM is applied to the motor via the L298N.
+
+The integral term eliminates steady-state speed error. The proportional term provides fast response. The derivative term (set to 0 by default for velocity control) can dampen oscillation if needed.
+
+### Tuning Procedure
+
+1. Upload `test_pid.ino`. Open Serial Monitor at 9600 baud.
+2. **Phase 1 (open-loop):** Hold robot off the ground. Read the pulse counts. Set `TARGET_SPEED_PULSES` in `config.h` to the average.
+3. **Phase 2 (PID active):** Place robot on the ground. Increase `PID_KP` until response is fast without oscillation.
+4. Increase `PID_KI` gradually to eliminate any remaining steady-state error.
+5. Upload `robot_car_pid.ino` and test straight-line driving.
+
+### Tuning Reference
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Speed barely responds | `PID_KP` too low | Increase `PID_KP` |
+| Speed oscillates rapidly | `PID_KP` too high | Reduce `PID_KP` |
+| Steady-state error persists | `PID_KI` too low | Increase `PID_KI` |
+| Slow long-period oscillation | `PID_KI` too high | Reduce `PID_KI` |
+| Noisy/erratic PWM output | `PID_KD` too high | Reduce or zero `PID_KD` |
+| PWM saturates and stays high | Integral windup | Reduce `PID_INTEGRAL_LIMIT` |
+
+---
+
 ## Future Improvements
 
+- [x] PID closed-loop speed control with wheel encoders (`src/robot_car_pid/`)
+- [ ] Heading control using encoder-derived odometry
 - [ ] Bluetooth remote control via HC-05/HC-06 module
 - [ ] IR line-following sensors for track navigation
-- [ ] Wheel encoders for odometry and PID speed control
-- [ ] Servo-mounted sensor for left/right scanning
-- [ ] OLED display showing live distance and state
+- [ ] Servo-mounted sensor for left/right scanning before turns
+- [ ] OLED display showing live distance, speed, and state
 - [ ] Replace fixed turn time with gyroscope-measured heading
 
 ---

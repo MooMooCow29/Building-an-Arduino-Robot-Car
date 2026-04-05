@@ -16,8 +16,8 @@
  *   - No change < 2 cm: normal — sensor blind zone below 2 cm.
  */
 
-#include "../robot_car/config.h"
-#include "../robot_car/ultrasonic.h"
+#include "config.h"
+#include "ultrasonic.h"
 
 void setup() {
   Serial.begin(SERIAL_BAUD);
