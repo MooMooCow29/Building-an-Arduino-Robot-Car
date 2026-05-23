@@ -1,0 +1,22 @@
+# Arduino IDE build output
+build/
+*.bin
+*.elf
+*.hex
+*.map
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# JetBrains
+.idea/
+
+# Backup files
+*.bak
+*.orig
