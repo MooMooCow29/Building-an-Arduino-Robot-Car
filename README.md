@@ -65,7 +65,7 @@ The firmware is structured as a **non-blocking state machine** using `millis()` 
 | **5V** | HC-SR04 VCC, L298N VSS | Logic supply |
 | **GND** | HC-SR04 GND, L298N GND | Common ground ⚠️ |
 
-> ⚠️ **Critical:** Arduino GND, L298N GND, and battery negative **must** all be connected together. Missing this causes erratic behaviour.
+>  **Critical:** Arduino GND, L298N GND, and battery negative **must** all be connected together. Missing this causes erratic behaviour.
 
 ### Power
 
