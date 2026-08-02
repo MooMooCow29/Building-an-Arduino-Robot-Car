@@ -43,8 +43,8 @@ The firmware is structured as a **non-blocking state machine** using `millis()` 
 | MDF Robot Chassis | 1 | Two-layer laser-cut |
 | 9 V Battery + Clip | 1 | Powers L298N and Arduino |
 | Half-size Breadboard | 1 | For sensor connections |
-| Jumper Wires | — | Male-to-male and male-to-female |
-| M3 Standoffs & Screws | — | For mounting Arduino |
+| Jumper Wires | - | Male-to-male and male-to-female |
+| M3 Standoffs & Screws | - | For mounting Arduino |
 
 ---
 
@@ -240,7 +240,7 @@ Prints live distance readings every 100 ms. Wave your hand in front of the senso
 
 ---
 
-## v2 — PID Closed-Loop Speed Control
+## v2 - PID Closed-Loop Speed Control
 
 The `src/robot_car_pid/` sketch extends v1 with **closed-loop PID motor speed control** using wheel encoders. Both motors are independently regulated to maintain equal, consistent speed regardless of manufacturing variation, battery voltage sag, or surface grip differences.
 
